@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NuGetRepackager": {
+      "commandName": "Project",
+      "commandLineArgs": "--prv=11.0.0-pr.1.1.1\r\n--nupkg=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\bin\\Debug\\Clark.Payments.ExternalClients.11.0.0-pr.1.1.1.nupkg\r\n--csproj=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\bin\\Debug\\Clark.Payments.ExternalClients.csproj"
+    }
+  }
+}

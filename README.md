@@ -1,2 +1,3 @@
-# nuget-repackager
-A dotnet tool for repackaging pre-release NuGet packages and provides options for updating associated files.
+# NuGet Repackager  
+
+A dotnet tool for repackaging pre-release NuGet packages. This tool also provides options for updating associated files.  
