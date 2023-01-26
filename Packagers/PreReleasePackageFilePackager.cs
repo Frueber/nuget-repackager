@@ -1,7 +1,5 @@
 ﻿using System.IO.Compression;
 using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Serialization;
 using NuGetRepackager.CommandLineArguments;
 
 namespace NuGetRepackager.Packagers;

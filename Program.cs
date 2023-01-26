@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using NuGetRepackager;
 using NuGetRepackager.CommandLineArguments;
 using NuGetRepackager.CommandLineArguments.Enums;

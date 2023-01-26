@@ -6,12 +6,12 @@ namespace NuGetRepackager.CommandLineArguments;
 /// <summary>
 /// Used to interact with a given command line argument per expectations.
 /// </summary>
-internal class CommandLineArgument
+internal sealed class CommandLineArgument
 {
     /// <summary>
     /// The key, or "flag", for the command line argument.
     /// </summary>
-    public CommandLineArgumentKey Key { get; set; }
+    public CommandLineArgumentKey Key { get; }
 
     /// <summary>
     /// The optional value for the command line argument.  
@@ -19,13 +19,23 @@ internal class CommandLineArgument
     /// <remarks>
     /// It's possible that the command line argument was simply a key/flag with no value.
     /// </remarks>
-    public string? Value { get; set; }
+    public string? Value { get; }
 
+    /// <summary>
+    /// Constructs the <see cref="CommandLineArgument"/> given a command line argument <see cref="string"/>.
+    /// </summary>
+    /// <param name="argument">The <see cref="CommandLineArgument"/>.</param>
+    /// <exception cref="ArgumentException"></exception>
     public CommandLineArgument(string argument)
     {
-        var parts = argument.Split('=', 2);
+        var parts = argument.Split(
+            '=',
+            2,
+            StringSplitOptions.RemoveEmptyEntries
+            | StringSplitOptions.TrimEntries
+        );
 
-        switch (parts.Count())
+        switch (parts.Length)
         {
             case 1:
                 Key = parts[0].ToCommandLineArgumentKey();
