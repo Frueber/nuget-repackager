@@ -26,3 +26,5 @@ The entire command should look like this: `dotnet NuGetRepackager.dll --prv=11.0
 - NuSpec File Location: `--nuspec`  
 
 // TODO: Could block non-existent pre-release versions.  
+// TODO: Being able to just update a pre-release package to a new pre-release version. 
+	(not making it a release but effectively renaming it and keeping it as a pre-release package).
