@@ -73,9 +73,6 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
 
         var updatedPackageVersionParts = Regex.Match(updatedPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern).Value.Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
 
-        if (int.Parse(currentPackageVersionParts[0]) > int.Parse(updatedPackageVersionParts[0]))
-        
-
         for (var packageVersionPartIndex = 0; packageVersionPartIndex < VersionConstants.PackageVersionPartsCount; packageVersionPartIndex++)
         {
             if (int.Parse(currentPackageVersionParts[packageVersionPartIndex]) > int.Parse(updatedPackageVersionParts[packageVersionPartIndex]))

@@ -1,7 +1,7 @@
 ﻿using NuGetRepackager.CommandLineArguments;
 using NuGetRepackager.CommandLineArguments.Enums;
 
-namespace NuGetRepackager.Unit.CommandLineArguments;
+namespace NuGetRepackager.Tests.Unit.CommandLineArguments;
 
 public class CommandLineArgumentTests
 {

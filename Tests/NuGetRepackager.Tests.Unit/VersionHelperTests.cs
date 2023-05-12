@@ -1,4 +1,4 @@
-﻿namespace NuGetRepackager.Unit;
+﻿namespace NuGetRepackager.Tests.Unit;
 
 public class VersionHelperTests
 {

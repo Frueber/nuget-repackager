@@ -1,8 +1,8 @@
-﻿using NuGetRepackager.CommandLineArguments;
-using NuGetRepackager.CommandLineArguments.Enums;
+﻿using NuGetRepackager.CommandLineArguments.Enums;
 using NuGetRepackager.CommandLineArguments.Extensions;
+using NuGetRepackager.CommandLineArguments;
 
-namespace NuGetRepackager.Unit.CommandLineArguments.Extensions;
+namespace NuGetRepackager.Tests.Unit.CommandLineArguments.Extensions;
 
 public sealed class StringExtensionsTests
 {
