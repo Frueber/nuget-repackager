@@ -14,7 +14,7 @@ internal sealed class PackagerGenerator
     /// based on the provided <see cref="CommandLineArgument"/>.
     /// </summary>
     /// <param name="commandLineArgument">The command line argument.</param>
-    /// <returns></returns>
+    /// <returns>An instance of <see cref="IPackager"/> for the provided <see cref="CommandLineArgument"/>.</returns>
     internal IPackager CreatePackager(CommandLineArgument commandLineArgument)
     {
         return commandLineArgument.Key switch
