@@ -5,9 +5,9 @@ using NuGetRepackager.CommandLineArguments;
 namespace NuGetRepackager.Packagers;
 
 /// <summary>
-/// Provides features for updating files involved in version updates and packaging for pre-release NuGet packages.
+/// Provides features for updating files involved in version updates and packaging for NuGet packages where we're forcing a version update.
 /// </summary>
-internal sealed class PreReleasePackageFilePackager : IPackager
+internal sealed class ForcedPackageVersionPackageFilePackager : IPackager
 {
     /// <inheritdoc/>
     public void Handle(
@@ -17,10 +17,16 @@ internal sealed class PreReleasePackageFilePackager : IPackager
     {
         if (commandLineArgument.Value is null)
         {
-            Console.WriteLine("Please provide the pre-release package file path.");
+            Console.WriteLine("Please provide the package file path which should be forced to a new version.");
 
             throw new ArgumentException("The required command line argument value was not provided.");
         }
+
+        // TODO: Verify that we have the new version.
+        // TODO: Forcing the version to an older or same version is not allowed.
+        // TODO: Update the version with no need to update past history.
+
+        // TODO: This should be able to detect if we were given a standard release or pre-release package version.
 
         var preReleasePackageFilePathGroups = Regex.Match(commandLineArgument.Value, VersionConstants.RegexPatterns.PreReleasePackageFilePathGroupPattern).Groups;
 
@@ -75,6 +81,7 @@ internal sealed class PreReleasePackageFilePackager : IPackager
 
         var preReleaseNuspecFilePackagerCommandLineArgument = new CommandLineArgument($"{CommandLineArgumentConstants.PreReleaseNuspecFilePath}={nuspecFilePath}");
         
+        // TODO: Make a ForcedPackageVersionNuspecFilePackager
         var preReleaseNuspecFilePackager = new PreReleaseNuspecFilePackager();
 
         preReleaseNuspecFilePackager.Handle(

@@ -22,6 +22,7 @@ internal sealed class PackagerGenerator
             CommandLineArgumentKey.PreReleasePackageFilePath => new PreReleasePackageFilePackager(),
             CommandLineArgumentKey.PreReleaseCsProjFilePath => new PreReleaseCsProjFilePackager(),
             CommandLineArgumentKey.PreReleaseNuspecFilePath => new PreReleaseNuspecFilePackager(),
+            CommandLineArgumentKey.ForcedPackageVersionPackageFilePath => new ForcedPackageVersionPackageFilePackager(),
             _ => throw new InvalidOperationException("There is no packager for the provided command line argument.")
         };
     }

@@ -1,17 +1,14 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using NuGetRepackager;
 using NuGetRepackager.CommandLineArguments;
 using NuGetRepackager.CommandLineArguments.Enums;
+using NuGetRepackager.CommandLineArguments.Extensions;
 
 Console.WriteLine("Taking a look at things...");
 
 var commandLineArguments = args.Select(argument => new CommandLineArgument(argument));
 
-var packagerCommandLineArguments = commandLineArguments.Where(commandLineArgument =>
-    commandLineArgument.Key is not CommandLineArgumentKey.Unknown
-    and not CommandLineArgumentKey.PreReleaseVersion
-)
+var packagerCommandLineArguments = commandLineArguments.ToPackagerCommandLineArguments()
     .ToArray();
 
 if (
@@ -64,8 +61,17 @@ foreach (var packagerCommandLineArgument in packagerCommandLineArguments)
 {
     var packager = packagerGenerator.CreatePackager(packagerCommandLineArgument);
 
-    packager.Handle(
-        packagerCommandLineArgument,
-        preReleaseVersion
-    );
+    try
+    {
+        packager.Handle(
+            packagerCommandLineArgument,
+            preReleaseVersion
+        );
+    }
+    catch (Exception exception)
+    {
+        Console.WriteLine($"An error occurred in the packager for the command line argument with key {packagerCommandLineArgument.Key}: {exception.Message}");
+
+        return;
+    }
 }

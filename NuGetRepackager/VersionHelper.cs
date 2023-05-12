@@ -19,20 +19,20 @@ internal static class VersionHelper
         var releaseVersionParts = versionParts[0].Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
         var preReleaseVersionParts = versionParts[1].Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
 
-        if (int.Parse(preReleaseVersionParts[0]) > 0)
+        if (int.Parse(preReleaseVersionParts[VersionConstants.PackageVersionMajorPartIndex]) > 0)
         {
-            releaseVersionParts[0] = (int.Parse(releaseVersionParts[0]) + 1).ToString();
-            releaseVersionParts[1] = VersionConstants.BasePackageVersionPartValue;
-            releaseVersionParts[2] = VersionConstants.BasePackageVersionPartValue;
+            releaseVersionParts[VersionConstants.PackageVersionMajorPartIndex] = (int.Parse(releaseVersionParts[VersionConstants.PackageVersionMajorPartIndex]) + 1).ToString();
+            releaseVersionParts[VersionConstants.PackageVersionMinorPartIndex] = VersionConstants.BasePackageVersionPartValue;
+            releaseVersionParts[VersionConstants.PackageVersionPatchPartIndex] = VersionConstants.BasePackageVersionPartValue;
         }
-        else if (int.Parse(preReleaseVersionParts[1]) > 0)
+        else if (int.Parse(preReleaseVersionParts[VersionConstants.PackageVersionMinorPartIndex]) > 0)
         {
-            releaseVersionParts[1] = (int.Parse(releaseVersionParts[1]) + 1).ToString();
-            releaseVersionParts[2] = VersionConstants.BasePackageVersionPartValue;
+            releaseVersionParts[VersionConstants.PackageVersionMinorPartIndex] = (int.Parse(releaseVersionParts[VersionConstants.PackageVersionMinorPartIndex]) + 1).ToString();
+            releaseVersionParts[VersionConstants.PackageVersionPatchPartIndex] = VersionConstants.BasePackageVersionPartValue;
         }
-        else if (int.Parse(preReleaseVersionParts[2]) > 0)
+        else if (int.Parse(preReleaseVersionParts[VersionConstants.PackageVersionPatchPartIndex]) > 0)
         {
-            releaseVersionParts[2] = (int.Parse(releaseVersionParts[2]) + 1).ToString();
+            releaseVersionParts[VersionConstants.PackageVersionPatchPartIndex] = (int.Parse(releaseVersionParts[VersionConstants.PackageVersionPatchPartIndex]) + 1).ToString();
         }
 
         return string.Join(VersionConstants.PackageVersionDivider, releaseVersionParts);
@@ -63,17 +63,17 @@ internal static class VersionHelper
         var updatedPreReleasePackageMajorVersionPart = int.Parse(preReleaseVersionPartsB[0]) - int.Parse(preReleaseVersionPartsA[0]);
         var updatedPreReleasePackageMinorVersionPart = int.Parse(preReleaseVersionPartsB[1]);
 
-        updatedPreReleasePackageVersionParts[0] = updatedPreReleasePackageMajorVersionPart.ToString();
+        updatedPreReleasePackageVersionParts[VersionConstants.PackageVersionMajorPartIndex] = updatedPreReleasePackageMajorVersionPart.ToString();
 
         if(updatedPreReleasePackageMajorVersionPart > 0)
         {
-            updatedPreReleasePackageVersionParts[1] = updatedPreReleasePackageMinorVersionPart.ToString();
+            updatedPreReleasePackageVersionParts[VersionConstants.PackageVersionMinorPartIndex] = updatedPreReleasePackageMinorVersionPart.ToString();
         }
-        else if(int.Parse(preReleaseVersionPartsB[1]) >= int.Parse(preReleaseVersionPartsA[1]))
+        else if(int.Parse(preReleaseVersionPartsB[VersionConstants.PackageVersionMinorPartIndex]) >= int.Parse(preReleaseVersionPartsA[VersionConstants.PackageVersionMinorPartIndex]))
         {
-            updatedPreReleasePackageMinorVersionPart = int.Parse(preReleaseVersionPartsB[1]) - int.Parse(preReleaseVersionPartsA[1]);
+            updatedPreReleasePackageMinorVersionPart = int.Parse(preReleaseVersionPartsB[VersionConstants.PackageVersionMinorPartIndex]) - int.Parse(preReleaseVersionPartsA[VersionConstants.PackageVersionMinorPartIndex]);
 
-            updatedPreReleasePackageVersionParts[1] = updatedPreReleasePackageMinorVersionPart.ToString();
+            updatedPreReleasePackageVersionParts[VersionConstants.PackageVersionMinorPartIndex] = updatedPreReleasePackageMinorVersionPart.ToString();
         }
 
         if (
@@ -81,13 +81,13 @@ internal static class VersionHelper
             || updatedPreReleasePackageMinorVersionPart > 0
         )
         {
-            updatedPreReleasePackageVersionParts[2] = int.Parse(preReleaseVersionPartsB[2]).ToString();
+            updatedPreReleasePackageVersionParts[VersionConstants.PackageVersionPatchPartIndex] = int.Parse(preReleaseVersionPartsB[VersionConstants.PackageVersionPatchPartIndex]).ToString();
         }
-        else if (int.Parse(preReleaseVersionPartsB[2]) >= int.Parse(preReleaseVersionPartsA[2]))
+        else if (int.Parse(preReleaseVersionPartsB[VersionConstants.PackageVersionPatchPartIndex]) >= int.Parse(preReleaseVersionPartsA[VersionConstants.PackageVersionPatchPartIndex]))
         {
-            var updatedPreReleasePackagePatchVersionPart = int.Parse(preReleaseVersionPartsB[2]) - int.Parse(preReleaseVersionPartsA[2]);
+            var updatedPreReleasePackagePatchVersionPart = int.Parse(preReleaseVersionPartsB[VersionConstants.PackageVersionPatchPartIndex]) - int.Parse(preReleaseVersionPartsA[VersionConstants.PackageVersionPatchPartIndex]);
 
-            updatedPreReleasePackageVersionParts[2] = updatedPreReleasePackagePatchVersionPart.ToString();
+            updatedPreReleasePackageVersionParts[VersionConstants.PackageVersionPatchPartIndex] = updatedPreReleasePackagePatchVersionPart.ToString();
         }
 
         var updatedPreReleasePackageVersion = string.Join(VersionConstants.PackageVersionDivider, updatedPreReleasePackageVersionParts);

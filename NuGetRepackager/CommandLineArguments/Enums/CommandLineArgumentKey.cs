@@ -28,5 +28,15 @@ internal enum CommandLineArgumentKey
     /// <summary>
     /// The pre-release nuspec file path.
     /// </summary>
-    PreReleaseNuspecFilePath = 4
+    PreReleaseNuspecFilePath = 4,
+
+    /// <summary>
+    /// The version to force a package or associated files to.
+    /// </summary>
+    ForcedPackageVersion = 5,
+
+    /// <summary>
+    /// The package file path being forced to a specified version.
+    /// </summary>
+    ForcedPackageVersionPackageFilePath = 6
 }

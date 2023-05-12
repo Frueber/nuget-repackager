@@ -113,6 +113,20 @@ public class CommandLineArgumentTests
 
         yield return new object[]
         {
+            $" {CommandLineArgumentConstants.ForcedPackageVersion}=2.0.0",
+            CommandLineArgumentKey.ForcedPackageVersion,
+            "2.0.0"
+        };
+
+        yield return new object[]
+        {
+            $" {CommandLineArgumentConstants.ForcedPackageVersionPackageFilePath} = C:wow\\Package.nupkg ",
+            CommandLineArgumentKey.ForcedPackageVersionPackageFilePath,
+            "C:wow\\Package.nupkg"
+        };
+
+        yield return new object[]
+        {
             $" unknown = space ",
             CommandLineArgumentKey.Unknown,
             "space"

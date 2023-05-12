@@ -26,6 +26,12 @@ internal static class VersionConstants
 
     internal const int PackageVersionPartsCount = 3;
 
+    internal const int PackageVersionMajorPartIndex = 0;
+
+    internal const int PackageVersionMinorPartIndex = 1;
+
+    internal const int PackageVersionPatchPartIndex = 2;
+
     internal const string NuspecFileExtension = ".nuspec";
 
     internal const string NuGetPackageFileExtension = ".nupkg";

@@ -11,4 +11,8 @@ internal static class CommandLineArgumentConstants
     internal const string PreReleaseCsProjFilePath = $"{CommandLineArgumentDivider}csproj";
 
     internal const string PreReleaseNuspecFilePath = $"{CommandLineArgumentDivider}nuspec";
+
+    internal const string ForcedPackageVersion = $"{CommandLineArgumentDivider}forced-v";
+
+    internal const string ForcedPackageVersionPackageFilePath = $"{CommandLineArgumentDivider}forced-nupkg";
 }

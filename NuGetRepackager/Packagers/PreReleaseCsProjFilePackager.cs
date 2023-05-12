@@ -69,17 +69,26 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
         Console.WriteLine($"Updated Package Version: {updatedPackageVersion}");
         Console.WriteLine();
 
-        var currentPackageVersionParts = Regex.Match(currentPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern).Value.Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
+        var currentPackageVersionParts = Regex.Match(currentPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern)
+            .Value
+            .Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
 
-        var updatedPackageVersionParts = Regex.Match(updatedPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern).Value.Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
+        var updatedPackageVersionParts = Regex.Match(updatedPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern)
+            .Value
+            .Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
 
-        for (var packageVersionPartIndex = 0; packageVersionPartIndex < VersionConstants.PackageVersionPartsCount; packageVersionPartIndex++)
+        for (var packageVersionPartIndex = VersionConstants.PackageVersionMajorPartIndex; packageVersionPartIndex < VersionConstants.PackageVersionPatchPartIndex; packageVersionPartIndex++)
         {
             if (int.Parse(currentPackageVersionParts[packageVersionPartIndex]) > int.Parse(updatedPackageVersionParts[packageVersionPartIndex]))
             {
                 Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion}, is past the expected update version {updatedPackageVersion}.");
 
                 return;
+            }
+            else if (int.Parse(currentPackageVersionParts[packageVersionPartIndex]) < int.Parse(updatedPackageVersionParts[packageVersionPartIndex]))
+            {
+                // This version part was updated and the following version parts are expected to be reset to 0.
+                break;
             }
         }
 

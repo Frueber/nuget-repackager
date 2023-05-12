@@ -11,6 +11,8 @@ public sealed class StringExtensionsTests
     [InlineData(CommandLineArgumentConstants.PreReleasePackageFilePath, CommandLineArgumentKey.PreReleasePackageFilePath)]
     [InlineData(CommandLineArgumentConstants.PreReleaseCsProjFilePath, CommandLineArgumentKey.PreReleaseCsProjFilePath)]
     [InlineData(CommandLineArgumentConstants.PreReleaseNuspecFilePath, CommandLineArgumentKey.PreReleaseNuspecFilePath)]
+    [InlineData(CommandLineArgumentConstants.ForcedPackageVersion, CommandLineArgumentKey.ForcedPackageVersion)]
+    [InlineData(CommandLineArgumentConstants.ForcedPackageVersionPackageFilePath, CommandLineArgumentKey.ForcedPackageVersionPackageFilePath)]
     [InlineData("SomeUnknownValue", CommandLineArgumentKey.Unknown)]
     public void ToCommandLineArgumentKey_ShouldReturnExpectedCommandLineArgumentKey_WhenInvoked(
         string commandLineArgumentValue,

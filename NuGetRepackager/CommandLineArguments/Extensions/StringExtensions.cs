@@ -20,6 +20,8 @@ internal static class StringExtensions
             CommandLineArgumentConstants.PreReleasePackageFilePath => CommandLineArgumentKey.PreReleasePackageFilePath,
             CommandLineArgumentConstants.PreReleaseCsProjFilePath => CommandLineArgumentKey.PreReleaseCsProjFilePath,
             CommandLineArgumentConstants.PreReleaseNuspecFilePath => CommandLineArgumentKey.PreReleaseNuspecFilePath,
+            CommandLineArgumentConstants.ForcedPackageVersion => CommandLineArgumentKey.ForcedPackageVersion,
+            CommandLineArgumentConstants.ForcedPackageVersionPackageFilePath => CommandLineArgumentKey.ForcedPackageVersionPackageFilePath,
             _ => CommandLineArgumentKey.Unknown
         };
     }
