@@ -24,15 +24,15 @@ A .NET tool for repackaging pre-release NuGet packages into a calculated release
 The entire command should look like this: `dotnet NuGetRepackager.dll --prv=11.0.0-pr.1.1.1 --csproj={CsProjFilePath}`.  
 5. Execute the command.  
 
-> ## Tips For Repackaging NuGet Packages  
->
-> ### Using the `--nupkg` flag with the `--nuspec` flag.  
-> 
-> Unless you're targeting a specific NuSpec file that is outside of the primary NuGet package being repackaged there is no need to use the `--nuspec` flag in conjuction with the `--nupkg` flag. 
-> The NuSpec file inside of the targeted NuGet package will be included as part of the repackaging for the entire NuGet package specified with the `--nupkg` flag.  
->
-> ### Updating A CsProj File  
->
-> One of the perks of this tool is to be able to assist with Continuous Integration and branching strategies like trunk-based or mainline branching.  
-> When a pre-release NuGet package is repackaged we are likely going to need to merge that occurrence into the `main` branch for the package. 
-> The `--csproj` flag allows us to specify the CsProj file which needs its package release notes history and version reconciled.  
+## Tips For Repackaging NuGet Packages  
+
+### Using the `--nupkg` flag with the `--nuspec` flag.  
+
+Unless you're targeting a specific NuSpec file that is outside of the primary NuGet package being repackaged there is no need to use the `--nuspec` flag in conjuction with the `--nupkg` flag. 
+The NuSpec file inside of the targeted NuGet package will be included as part of the repackaging for the entire NuGet package specified with the `--nupkg` flag.  
+
+### Updating A CsProj File  
+
+One of the perks of this tool is to be able to assist with Continuous Integration and branching strategies like trunk-based or mainline branching.  
+When a pre-release NuGet package is repackaged we are likely going to need to merge that occurrence into the `main` branch for the package. 
+The `--csproj` flag allows us to specify the CsProj file which needs its package release notes history and version reconciled.  
