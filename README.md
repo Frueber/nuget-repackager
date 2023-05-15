@@ -8,9 +8,25 @@ This tool aims to assist developers with Continuous Integration during NuGet pac
 
 # Install NuGet Repackager As A .NET Tool  
 
-1. ...
+## Install From NuGet Package Source  
 
-...
+1. Execute the following command into your command-line terminal: `dotnet tool install --global NuGetRepackager --version 1.0.0`.  
+
+    > Make sure to enter the version that you'd like to use.  
+
+2. We should now be able to use the tool with the command `NuGetRepackager`.  
+
+## Install From Local Project Source  
+
+1. Clone, or download a ZIP of, the repository.  
+
+2. Build and Pack the NuGetRepackager console application.  
+
+3. Navigate to the solution root for the project from your command-line terminal.  
+
+4. Execute the following command: `dotnet tool install --global --add-source ./NuGetRepackager/bin/Debug NuGetRepackager`.  
+
+5. We should now be able to use the tool with the command `NuGetRepackager`.  
 
 # List Of Flags  
 
@@ -26,10 +42,15 @@ This tool aims to assist developers with Continuous Integration during NuGet pac
 # Repackage NuGet Packages  
 
 1. Open a terminal.  
-2. Enter the beginning of the command: `dotnet NuGetRepackager.dll`.  
+
+2. Enter the beginning of the command: `NuGetRepackager`.  
+
 3. Append the pre-release version with the Pre-Release Version flag (`--prv`): `--prv=11.0.0-pr.1.1.1`.  
+
 4. From here on we can add any additional flags that will accomplish what we're looking to do. As an example, let's pretend that we would like to repackage a NuGet package and then update the main branch of the repository that the package came from.  
-The entire command should look like this: `dotnet NuGetRepackager.dll --prv=11.0.0-pr.1.1.1 --csproj={CsProjFilePath}`.  
+
+    The entire command should look like this: `NuGetRepackager --prv=11.0.0-pr.1.1.1 --csproj={CsProjFilePath}`.  
+
 5. Execute the command.  
 
 ## Tips For Repackaging NuGet Packages  
