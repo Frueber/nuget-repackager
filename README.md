@@ -20,6 +20,8 @@ This tool aims to assist developers with Continuous Integration during NuGet pac
 | `--nupkg` | NuGet Package File Location | The location of the NuGet package being repackaged, including the file name. |  
 | `--csproj` | CsProj File Location | The location of the associated CsProj file that needs updated with the occurrence of a pre-release package being repackaged as a release, including the file name. |  
 | `--nuspec` | NuSpec File Location | The location of the NuSpec that needs updated with the occurrence of a pre-release package being repackaged as a release, including the file name. |  
+| `--forced-v` | Forced Version | The version that a targeted package should be repackaged to. |  
+| `--forced-nupkg` | Forced Version NuGet Package File Location | The location of the NuGet package being repackaged to a forced version, including the file name. |  
 
 # Repackage NuGet Packages  
 

@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Serialization;
 using NuGetRepackager.CommandLineArguments;
 
