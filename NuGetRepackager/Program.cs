@@ -30,48 +30,44 @@ else if (
     return;
 }
 
-var preReleaseVersion = string.Empty;
-
 try
 {
-    var preReleaseVersionCommandLineArgument = commandLineArguments.Single(commandLineArgument => commandLineArgument.Key is CommandLineArgumentKey.PreReleaseVersion);
+    var preReleasePackageVersion = commandLineArguments.Single(commandLineArgument => commandLineArgument.Key is CommandLineArgumentKey.PreReleaseVersion)
+        .Value
+        ?.ToPackageVersion();
 
-    if (
-        preReleaseVersionCommandLineArgument.Value is null
-        || !Regex.IsMatch(preReleaseVersionCommandLineArgument.Value, $"^{VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}$")
-    )
+    if (preReleasePackageVersion?.PreReleasePackageVersion is null)
     {
         Console.WriteLine("Please provide the pre-release version argument.");
 
         return;
     }
 
-    preReleaseVersion = preReleaseVersionCommandLineArgument.Value;
+    var packagerGenerator = new PackagerGenerator();
+
+    foreach (var packagerCommandLineArgument in packagerCommandLineArguments)
+    {
+        var packager = packagerGenerator.CreatePackager(packagerCommandLineArgument);
+
+        try
+        {
+            packager.Handle(
+                packagerCommandLineArgument,
+                preReleasePackageVersion,
+                commandLineArguments.ToArray()
+            );
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"An error occurred in the packager for the command line argument with key {packagerCommandLineArgument.Key}: {exception.Message}");
+
+            return;
+        }
+    }
 }
 catch
 {
     Console.WriteLine("Please provide the pre-release version argument.");
 
     return;
-}
-
-var packagerGenerator = new PackagerGenerator();
-
-foreach (var packagerCommandLineArgument in packagerCommandLineArguments)
-{
-    var packager = packagerGenerator.CreatePackager(packagerCommandLineArgument);
-
-    try
-    {
-        packager.Handle(
-            packagerCommandLineArgument,
-            preReleaseVersion
-        );
-    }
-    catch (Exception exception)
-    {
-        Console.WriteLine($"An error occurred in the packager for the command line argument with key {packagerCommandLineArgument.Key}: {exception.Message}");
-
-        return;
-    }
 }

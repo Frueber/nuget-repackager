@@ -1,6 +1,6 @@
 ﻿namespace NuGetRepackager.Tests.Unit;
 
-public class VersionHelperTests
+public class PackageVersionExtensionsTests
 {
     [Theory]
     [InlineData("0.0.0-pr.1.1.1", "1.0.0")]
@@ -63,9 +63,10 @@ public class VersionHelperTests
         string expectedReleasePackageVersion
     )
     {
-        var releasePackageVersion = VersionHelper.GenerateReleasePackageVersion(preReleasePackageVersion);
+        var releasePackageVersion = preReleasePackageVersion.ToPackageVersion()
+            !.GenerateReleasePackageVersion();
 
-        Assert.Equal(expectedReleasePackageVersion, releasePackageVersion);
+        Assert.Equal(expectedReleasePackageVersion, releasePackageVersion.ToPackageVersionString());
     }
 
     [Theory]
@@ -108,12 +109,10 @@ public class VersionHelperTests
         string expectedUpdatedPreReleasePackageVersion
     )
     {
-        var updatedPreReleasePackageVersion = VersionHelper.GenerateUpdatedPreReleasePackageVersion(
-            preReleasePackageVersion,
-            currentPreReleasePackageVersion
-        );
+        var updatedPreReleasePackageVersion = preReleasePackageVersion.ToPackageVersion()
+            !.GenerateUpdatedPreReleasePackageVersion(currentPreReleasePackageVersion.ToPackageVersion()!);
 
-        Assert.Equal(expectedUpdatedPreReleasePackageVersion, updatedPreReleasePackageVersion);
+        Assert.Equal(expectedUpdatedPreReleasePackageVersion, updatedPreReleasePackageVersion.ToPackageVersionString());
     }
 
     [Theory]
@@ -124,11 +123,13 @@ public class VersionHelperTests
         string expectedUpdatedPreReleasePackageVersionLine
     )
     {
-        var updatedPreReleasePackageVersion = VersionHelper.GenerateUpdatedPreReleasePackageVersionLine(
-            preReleasePackageVersion,
-            currentPreReleasePackageVersionLine
-        );
+        var updatedPreReleasePackageVersion = preReleasePackageVersion.ToPackageVersion()
+            !.GenerateUpdatedPreReleasePackageVersionLine(currentPreReleasePackageVersionLine);
 
         Assert.Equal(expectedUpdatedPreReleasePackageVersionLine, updatedPreReleasePackageVersion);
     }
+
+    // TODO: Test ComparedTo
+    // TODO: Test ToPackageVersion
+    // TODO: Test ToPackageVersionString
 }

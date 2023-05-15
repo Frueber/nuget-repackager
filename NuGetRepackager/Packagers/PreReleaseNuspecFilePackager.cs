@@ -17,7 +17,8 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
     /// <inheritdoc/>
     public void Handle(
         CommandLineArgument commandLineArgument,
-        string preReleaseVersion
+        PackageVersion preReleasePackageVersion,
+        CommandLineArgument[] commandLineArguments
     )
     {
         if (commandLineArgument.Value is null)
@@ -47,7 +48,7 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
 
         var versionXmlNodeList = nuspecXmlDocument.GetElementsByTagName(_versionXmlTag);
 
-        var currentPackageVersion = versionXmlNodeList[0]?.InnerText;
+        var currentPackageVersion = versionXmlNodeList[0]?.InnerText?.ToPackageVersion();
 
         if (currentPackageVersion is null)
         {
@@ -55,18 +56,18 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
 
             return;
         }
-        else if (preReleaseVersion != currentPackageVersion)
+        else if (preReleasePackageVersion != currentPackageVersion)
         {
             Console.WriteLine("The provided nuspec file version does not match the provided pre-release version.");
 
             return;
         }
 
-        var releasePackageVersion = VersionHelper.GenerateReleasePackageVersion(currentPackageVersion);
+        var releasePackageVersion = currentPackageVersion.GenerateReleasePackageVersion();
 
         Console.WriteLine();
-        Console.WriteLine($"Targeted Package Version: {currentPackageVersion}");
-        Console.WriteLine($"Updated Package Version: {releasePackageVersion}");
+        Console.WriteLine($"Targeted Package Version: {currentPackageVersion.ToPackageVersionString()}");
+        Console.WriteLine($"Updated Package Version: {releasePackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
         Console.WriteLine("Updating...");
@@ -75,10 +76,10 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
 
         var newVersionXmlNodeList = newNuspecXmlDocument.GetElementsByTagName(_versionXmlTag);
 
-        newVersionXmlNodeList[0]!.InnerText = releasePackageVersion;
+        newVersionXmlNodeList[0]!.InnerText = releasePackageVersion.ToPackageVersionString();
 
         Console.WriteLine();
-        Console.WriteLine($"Current Package Version In Nuspec file: {currentPackageVersion}");
+        Console.WriteLine($"Current Package Version In Nuspec file: {currentPackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
         var releaseNotesXmlNodeList = nuspecXmlDocument.GetElementsByTagName(_releaseNotesXmlTag);
@@ -102,7 +103,7 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
                 var releaseNotesLine = releaseNotesLines.ElementAt(releaseNotesLineIndex);
                 var trimmedReleaseNotesLine = releaseNotesLine.TrimStart();
 
-                if (trimmedReleaseNotesLine.StartsWith(preReleaseVersion))
+                if (trimmedReleaseNotesLine.StartsWith(preReleasePackageVersion.ToPackageVersionString()))
                 {
                     isPreReleaseVersionFound = true;
                     releaseLineIndentation = Regex.Match(releaseNotesLine, $@"^{VersionConstants.RegexPatterns.ReleaseLineIndentationPattern}").Value;
@@ -119,10 +120,7 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
                     }
 
                     // We aren't expecting to perform a production release of a package version that is older than the latest package version.
-                    releaseNotesLines[releaseNotesLineIndex] = VersionHelper.GenerateUpdatedPreReleasePackageVersionLine(
-                        preReleaseVersion,
-                        releaseNotesLine
-                    );
+                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(releaseNotesLine);
                 }
 
                 Console.WriteLine(releaseNotesLine);
@@ -130,7 +128,7 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
 
             if (isPreReleaseVersionFound)
             {
-                var releaseNotesLine = $"{releaseLineIndentation}{releasePackageVersion} Version change for release of {preReleaseVersion}.";
+                var releaseNotesLine = $"{releaseLineIndentation}{releasePackageVersion.ToPackageVersionString()} Version change for release of {preReleasePackageVersion.ToPackageVersionString()}.";
 
                 if (releaseNotesLineIndexForInsert is not null)
                 {

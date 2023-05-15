@@ -24,6 +24,8 @@ internal static class VersionConstants
 
     internal const string BasePackageVersionPartValue = "0";
 
+    internal const int BasePackageVersionPartNumericValue = 0;
+
     internal const int PackageVersionPartsCount = 3;
 
     internal const int PackageVersionMajorPartIndex = 0;

@@ -1,8 +1,12 @@
 {
   "profiles": {
-    "NuGetRepackager": {
+    "ForcedPackageVersion": {
       "commandName": "Project",
-      "commandLineArgs": "--prv=13.5.0-pr.1.1.0\r\n--nupkg=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\bin\\Debug\\Clark.Payments.ExternalClients.11.0.0-pr.1.1.1.nupkg\r\n--csproj=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\Clark.Payments.ExternalClients.csproj"
+      "commandLineArgs": "--prv=13.5.0-pr.1.1.0\r\n--forced-v=17.6.0\r\n--forced-nupkg=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\bin\\Debug\\Clark.Payments.ExternalClients.11.0.0.nupkg"
+    },
+    "RepackagePreReleaseNuGetWithCsProjFile": {
+      "commandName": "Project",
+      "commandLineArgs": "--prv=14.0.0-pr.1.1.1\r\n--nupkg=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\bin\\Debug\\Clark.Payments.ExternalClients.14.0.0-pr.1.1.1.nupkg\r\n--csproj=C:\\Users\\oshartle\\git\\Clark.PaymentSystems\\Clients.DotNet\\Clark.Payments.ExternalClients\\Clark.Payments.ExternalClients.csproj"
     }
   }
 }

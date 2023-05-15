@@ -17,7 +17,8 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
     /// <inheritdoc/>
     public void Handle(
         CommandLineArgument commandLineArgument,
-        string preReleaseVersion
+        PackageVersion preReleasePackageVersion,
+        CommandLineArgument[] commandLineArguments
     )
     {
         if (commandLineArgument.Value is null)
@@ -48,58 +49,58 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
 
         var versionXmlNodeList = csProjXmlDocument.GetElementsByTagName(_versionXmlTag);
 
-        var currentPackageVersion = versionXmlNodeList[0]?.InnerText;
+        var currentPackageVersion = versionXmlNodeList[0]?.InnerText?.ToPackageVersion();
 
         if (currentPackageVersion is null)
         {
-            Console.WriteLine("The version could not be found.");
+            Console.WriteLine("The version could not be found in the csproj file.");
 
             return;
         }
 
-        var updatedPackageVersion = currentPackageVersion == preReleaseVersion
-            ? VersionHelper.GenerateReleasePackageVersion(preReleaseVersion)
-            : VersionHelper.GenerateUpdatedPreReleasePackageVersion(
-                preReleaseVersion,
-                currentPackageVersion
-            );
+        var updatedPackageVersion = currentPackageVersion == preReleasePackageVersion
+            ? preReleasePackageVersion.GenerateReleasePackageVersion()
+            : preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersion(currentPackageVersion);
 
-        Console.WriteLine($"Targeted Package Version: {preReleaseVersion}");
-        Console.WriteLine($"Current Package Version: {currentPackageVersion}");
-        Console.WriteLine($"Updated Package Version: {updatedPackageVersion}");
+        Console.WriteLine($"Targeted Package Version: {preReleasePackageVersion.ToPackageVersionString()}");
+        Console.WriteLine($"Current Package Version: {currentPackageVersion.ToPackageVersionString()}");
+        Console.WriteLine($"Updated Package Version: {updatedPackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
-        var currentPackageVersionParts = Regex.Match(currentPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern)
-            .Value
-            .Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
-
-        var updatedPackageVersionParts = Regex.Match(updatedPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern)
-            .Value
-            .Split(VersionConstants.PackageVersionDivider, VersionConstants.PackageVersionPartsCount);
-
-        for (var packageVersionPartIndex = VersionConstants.PackageVersionMajorPartIndex; packageVersionPartIndex < VersionConstants.PackageVersionPatchPartIndex; packageVersionPartIndex++)
+        if(currentPackageVersion.Major > updatedPackageVersion.Major)
         {
-            if (int.Parse(currentPackageVersionParts[packageVersionPartIndex]) > int.Parse(updatedPackageVersionParts[packageVersionPartIndex]))
-            {
-                Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion}, is past the expected update version {updatedPackageVersion}.");
+            Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
 
-                return;
-            }
-            else if (int.Parse(currentPackageVersionParts[packageVersionPartIndex]) < int.Parse(updatedPackageVersionParts[packageVersionPartIndex]))
-            {
-                // This version part was updated and the following version parts are expected to be reset to 0.
-                break;
-            }
+            return;
+        }
+        else if (
+            currentPackageVersion.Major == updatedPackageVersion.Major
+            && currentPackageVersion.Minor > updatedPackageVersion.Minor
+        )
+        {
+            Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
+
+            return;
+        }
+        else if (
+            currentPackageVersion.Major == updatedPackageVersion.Major
+            && currentPackageVersion.Minor == updatedPackageVersion.Minor
+            && currentPackageVersion.Patch > updatedPackageVersion.Patch
+        )
+        {
+            Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
+
+            return;
         }
 
         var newCsProjXmlDocument = (XmlDocument)csProjXmlDocument.Clone();
 
         var newVersionXmlNodeList = newCsProjXmlDocument.GetElementsByTagName(_versionXmlTag);
 
-        newVersionXmlNodeList[0]!.InnerText = updatedPackageVersion;
+        newVersionXmlNodeList[0]!.InnerText = updatedPackageVersion.ToPackageVersionString();
 
         Console.WriteLine();
-        Console.WriteLine($"Current Version In csproj file: {currentPackageVersion}");
+        Console.WriteLine($"Current Version In csproj file: {currentPackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
         var releaseNotesXmlNodeList = csProjXmlDocument.GetElementsByTagName(_packageReleaseNotesXmlTag);
@@ -123,7 +124,7 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
                 var releaseNotesLine = releaseNotesLines.ElementAt(releaseNotesLineIndex);
                 var trimmedReleaseNotesLine = releaseNotesLine.TrimStart();
 
-                if (trimmedReleaseNotesLine.StartsWith(preReleaseVersion))
+                if (trimmedReleaseNotesLine.StartsWith(preReleasePackageVersion.ToPackageVersionString()))
                 {
                     isPreReleaseVersionFound = true;
                     releaseLineIndentation = Regex.Match(releaseNotesLine, $@"^{VersionConstants.RegexPatterns.ReleaseLineIndentationPattern}").Value;
@@ -140,10 +141,7 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
                     }
 
                     // We aren't expecting to perform a production release of a package version that is older than the latest package version.
-                    releaseNotesLines[releaseNotesLineIndex] = VersionHelper.GenerateUpdatedPreReleasePackageVersionLine(
-                        preReleaseVersion,
-                        releaseNotesLine
-                    );
+                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(releaseNotesLine);
                 }
 
                 Console.WriteLine(releaseNotesLine);
@@ -151,7 +149,7 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
 
             if (isPreReleaseVersionFound)
             {
-                var releaseNotesLine = $"{releaseLineIndentation}{Regex.Match(updatedPackageVersion, VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern).Value} Version change for release of {preReleaseVersion}.";
+                var releaseNotesLine = $"{releaseLineIndentation}{Regex.Match(updatedPackageVersion.ToPackageVersionString(), VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern).Value} Version change for release of {preReleasePackageVersion.ToPackageVersionString()}.";
 
                 if (releaseNotesLineIndexForInsert is not null)
                 {

@@ -12,81 +12,108 @@ internal sealed class ForcedPackageVersionPackageFilePackager : IPackager
     /// <inheritdoc/>
     public void Handle(
         CommandLineArgument commandLineArgument,
-        string preReleaseVersion
+        PackageVersion preReleasePackageVersion,
+        CommandLineArgument[] commandLineArguments
     )
     {
+        var forcedPackageVersion = commandLineArguments.SingleOrDefault(commandLineArgument => commandLineArgument.Key is CommandLineArguments.Enums.CommandLineArgumentKey.ForcedPackageVersion)
+            ?.Value
+            ?.ToPackageVersion();
+
         if (commandLineArgument.Value is null)
         {
             Console.WriteLine("Please provide the package file path which should be forced to a new version.");
 
             throw new ArgumentException("The required command line argument value was not provided.");
         }
+        else if (forcedPackageVersion is null)
+        {
+            Console.WriteLine("Please provide the forced package version.");
 
-        // TODO: Verify that we have the new version.
-        // TODO: Forcing the version to an older or same version is not allowed.
+            throw new ArgumentException("The required command line argument value was not provided.");
+        }
+
         // TODO: Update the version with no need to update past history.
 
         // TODO: This should be able to detect if we were given a standard release or pre-release package version.
 
-        var preReleasePackageFilePathGroups = Regex.Match(commandLineArgument.Value, VersionConstants.RegexPatterns.PreReleasePackageFilePathGroupPattern).Groups;
+        var packageFilePathGroups = Regex.Match(commandLineArgument.Value, VersionConstants.RegexPatterns.PreReleasePackageFilePathGroupPattern).Groups;
 
-        var preReleasePackageFilePath = preReleasePackageFilePathGroups[0].Value;
-        var preReleasePackageFileDirectory = preReleasePackageFilePathGroups[1].Value;
-        var preReleasePackageFileName = preReleasePackageFilePathGroups[2].Value;
+        var packageFilePath = packageFilePathGroups[0].Value;
+        var packageFileDirectory = packageFilePathGroups[1].Value;
+        var packageFileName = packageFilePathGroups[2].Value;
 
-        var preReleasePackageVersion = Regex.Match(preReleasePackageFileName, $"{VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}$").Value;
+        var packageVersionGroups = Regex.Match(packageFileName, $@"(.*[^\.])\.=?{VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}$").Groups;
 
-        if (preReleasePackageVersion is null)
+        if (packageVersionGroups.Count < 3)
         {
-            Console.WriteLine("The provided package is not a pre-release. Nothing to repackage.");
+            packageVersionGroups = Regex.Match(packageFileName, $@"(.*[^\.])\.=?{VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern}$").Groups;
+        }
+
+        var packageFileNameWithoutPackageVersion = packageVersionGroups[1].Value;
+
+        var packageVersionFromFileName = Regex.Match(packageFileName, $"{VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}$")
+            .Value
+            .ToPackageVersion()
+            ?? Regex.Match(packageFileName, $"{VersionConstants.RegexPatterns.ReleasePackageVersionGroupPattern}$")
+                .Value
+                .ToPackageVersion();
+
+        if (packageVersionFromFileName is null)
+        {
+            Console.WriteLine("The current package version of the targeted package could not be found in the package filename.");
+
+            throw new ArgumentException("The required command line argument value was not provided.");
+        }
+
+        var forcedPackageVersionComparisonResult = forcedPackageVersion.ComparedTo(packageVersionFromFileName);
+
+        if (forcedPackageVersionComparisonResult is not PackageVersionComparisonResult.GreaterThan)
+        {
+            Console.WriteLine("The provided forced package version must be newer than the current package version.");
 
             return;
         }
-        else if (preReleaseVersion != preReleasePackageVersion)
-        {
-            Console.WriteLine("The provided pre-release package version does not match the provided pre-release version.");
 
-            return;
-        }
+        var packageFileNameWithForcedPackageVersion = packageFileName.Replace(
+            packageVersionFromFileName.ToPackageVersionString(),
+            forcedPackageVersion.ToPackageVersionString()
+        );
 
-        var packageFileName = Regex.Match(preReleasePackageFileName, $@"(.*[^\.])\.=?{VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}$").Groups[1];
-
-        var releasePackageVersion = VersionHelper.GenerateReleasePackageVersion(preReleasePackageVersion);
-
-        var nuspecFileName = $"{packageFileName}{VersionConstants.NuspecFileExtension}";
-        // The release package file path is also the NuGet package without the ".nuget" extension.
-        var releasePackageFilePath = $"{preReleasePackageFileDirectory}{packageFileName}.{releasePackageVersion}";
+        var nuspecFileName = $"{packageFileNameWithoutPackageVersion}{VersionConstants.NuspecFileExtension}";
+        // The release package file path is also the NuGet package without the ".nupkg" extension.
+        var releasePackageFilePath = $"{packageFileDirectory}{packageFileNameWithForcedPackageVersion}";
         var releasePackageFilePathWithExtension = $"{releasePackageFilePath}{VersionConstants.NuGetPackageFileExtension}";
         var nuspecFilePath = $"{releasePackageFilePath}\\{nuspecFileName}";
 
         Console.WriteLine();
-        Console.WriteLine($"Targeted Package Version: {preReleasePackageVersion}");
-        Console.WriteLine($"Updated Package Version: {releasePackageVersion}");
+        Console.WriteLine($"Targeted Package Version: {packageVersionFromFileName.ToPackageVersionString()}");
+        Console.WriteLine($"Updated Package Version: {forcedPackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
         if (File.Exists(releasePackageFilePathWithExtension))
         {
-            Console.WriteLine($"There is already a package with the intended release version {releasePackageVersion}. Will not attempt to repackage.");
+            Console.WriteLine($"There is already a package with the intended release version {forcedPackageVersion.ToPackageVersionString()}. Will not attempt to repackage.");
 
             return;
         }
 
         ZipFile.ExtractToDirectory(
-            preReleasePackageFilePath,
+            packageFilePath,
             releasePackageFilePath,
             true
         );
 
         Console.WriteLine("Repackaging...");
 
-        var preReleaseNuspecFilePackagerCommandLineArgument = new CommandLineArgument($"{CommandLineArgumentConstants.PreReleaseNuspecFilePath}={nuspecFilePath}");
+        var forcedPackageVersionNuspecFilePackagerCommandLineArgument = new CommandLineArgument($"{CommandLineArgumentConstants.PreReleaseNuspecFilePath}={nuspecFilePath}");
         
-        // TODO: Make a ForcedPackageVersionNuspecFilePackager
-        var preReleaseNuspecFilePackager = new PreReleaseNuspecFilePackager();
+        var forcedPackageVersionNuspecFilePackager = new ForcedPackageVersionNuspecFilePackager();
 
-        preReleaseNuspecFilePackager.Handle(
-            preReleaseNuspecFilePackagerCommandLineArgument,
-            preReleaseVersion
+        forcedPackageVersionNuspecFilePackager.Handle(
+            forcedPackageVersionNuspecFilePackagerCommandLineArgument,
+            preReleasePackageVersion,
+            commandLineArguments
         );
 
         ZipFile.CreateFromDirectory(
