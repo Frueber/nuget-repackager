@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,12 +6,33 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackAsTool>True</PackAsTool>
+    <Title>NuGetRepackager</Title>
+    <Description>NuGet Repackager is a .NET tool for repackaging pre-release NuGet packages into an automatically calculated release version, or into a specified pre-release or release version. This tool also provides options for updating associated files to reflect the occurrence of the repackaging.</Description>
+    <PackageProjectUrl>https://github.com/Frueber/nuget-repackager</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Frueber/nuget-repackager</RepositoryUrl>
+    <PackageTags>NuGet;Package;Repackage;Repackager;Tool</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReleaseNotes>0.0.0-pr.1.0.0 Created the initial NuGetRepackager tool.  </PackageReleaseNotes>
+    <Version>0.0.0-pr.1.0.0</Version>
+    <Copyright>Copyright (c) Owen Shartle 2023.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
 	  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 		  <_Parameter1>NuGetRepackager.Tests.Unit</_Parameter1>
 	  </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
