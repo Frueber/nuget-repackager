@@ -42,11 +42,9 @@ try
         return;
     }
 
-    var packagerGenerator = new PackagerGenerator();
-
     foreach (var packagerCommandLineArgument in packagerCommandLineArguments)
     {
-        var packager = packagerGenerator.CreatePackager(packagerCommandLineArgument);
+        var packager = PackagerGenerator.CreatePackager(packagerCommandLineArgument);
 
         try
         {

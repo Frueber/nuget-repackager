@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Text.RegularExpressions;
 using NuGetRepackager.CommandLineArguments;
+using NuGetRepackager.CommandLineArguments.Enums;
 
 namespace NuGetRepackager.Packagers;
 
@@ -22,6 +23,8 @@ internal sealed class PreReleasePackageFilePackager : IPackager
 
             throw new ArgumentException("The required command line argument value was not provided.");
         }
+
+        var isUnmanagedStandardReleaseVersion = commandLineArguments.Any(commandLineArgument => commandLineArgument.Key is CommandLineArgumentKey.UnmanagedStandardReleaseVersion);
 
         var preReleasePackageFilePathGroups = Regex.Match(commandLineArgument.Value, VersionConstants.RegexPatterns.PreReleasePackageFilePathGroupPattern).Groups;
 
@@ -52,7 +55,7 @@ internal sealed class PreReleasePackageFilePackager : IPackager
 
         var packageFileName = preReleasePackageVersionGroups[1].Value;
 
-        var releasePackageVersion = preReleasePackageVersion.GenerateReleasePackageVersion();
+        var releasePackageVersion = preReleasePackageVersion.GenerateReleasePackageVersion(isUnmanagedStandardReleaseVersion);
 
         var nuspecFileName = $"{packageFileName}{VersionConstants.NuspecFileExtension}";
         // The release package file path is also the NuGet package without the ".nupkg" extension.

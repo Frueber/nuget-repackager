@@ -38,5 +38,11 @@ internal enum CommandLineArgumentKey
     /// <summary>
     /// The package file path being forced to a specified version.
     /// </summary>
-    ForcedPackageVersionPackageFilePath = 6
+    ForcedPackageVersionPackageFilePath = 6,
+
+    /// <summary>
+    /// Unmanaged standard release version marker.  
+    /// Must be provided when the standard release version is not managed during pre-release package development so that the standard release version can be calculated accordingly.
+    /// </summary>
+    UnmanagedStandardReleaseVersion = 7
 }

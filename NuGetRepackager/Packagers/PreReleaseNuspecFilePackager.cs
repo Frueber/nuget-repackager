@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 using NuGetRepackager.CommandLineArguments;
+using NuGetRepackager.CommandLineArguments.Enums;
 
 namespace NuGetRepackager.Packagers;
 
@@ -27,6 +28,8 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
 
             throw new ArgumentException("The required command line argument value was not provided.");
         }
+
+        var isUnmanagedStandardReleaseVersion = commandLineArguments.Any(commandLineArgument => commandLineArgument.Key is CommandLineArgumentKey.UnmanagedStandardReleaseVersion);
 
         var nuspecFilePath = commandLineArgument.Value;
 
@@ -63,7 +66,7 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
             return;
         }
 
-        var releasePackageVersion = currentPackageVersion.GenerateReleasePackageVersion();
+        var releasePackageVersion = currentPackageVersion.GenerateReleasePackageVersion(isUnmanagedStandardReleaseVersion);
 
         Console.WriteLine();
         Console.WriteLine($"Targeted Package Version: {currentPackageVersion.ToPackageVersionString()}");
@@ -120,7 +123,10 @@ internal sealed class PreReleaseNuspecFilePackager : IPackager
                     }
 
                     // We aren't expecting to perform a production release of a package version that is older than the latest package version.
-                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(releaseNotesLine);
+                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(
+                        releaseNotesLine,
+                        isUnmanagedStandardReleaseVersion
+                    );
                 }
 
                 Console.WriteLine(releaseNotesLine);

@@ -118,8 +118,12 @@ internal static class PackageVersionExtensions
     /// Generates a new release package version from the provided pre-release package version.
     /// </summary>
     /// <param name="preReleasePackageVersion">The pre-release package version.</param>
+    /// <param name="isUnmanagedStandardReleaseVersion">Whther or not the standard release version part was not managed (changed during pre-release development).</param>
     /// <returns>A new release package version value in the three-part package version format (Example: <c>0.0.0</c>).</returns>
-    internal static PackageVersion GenerateReleasePackageVersion(this PackageVersion preReleasePackageVersion)
+    internal static PackageVersion GenerateReleasePackageVersion(
+        this PackageVersion preReleasePackageVersion,
+        bool isUnmanagedStandardReleaseVersion
+    )
     {
         var releasePackageVersion = new PackageVersion(
             preReleasePackageVersion.Major,
@@ -128,29 +132,32 @@ internal static class PackageVersionExtensions
             null
         );
 
-        if (preReleasePackageVersion.PreReleasePackageVersion?.Major > 0)
+        if(isUnmanagedStandardReleaseVersion)
         {
-            releasePackageVersion = releasePackageVersion with
+            if (preReleasePackageVersion.PreReleasePackageVersion?.Major > 0)
             {
-                Major = releasePackageVersion.Major + 1,
-                Minor = VersionConstants.BasePackageVersionPartNumericValue,
-                Patch = VersionConstants.BasePackageVersionPartNumericValue
-            };
-        }
-        else if (preReleasePackageVersion.PreReleasePackageVersion?.Minor > 0)
-        {
-            releasePackageVersion = releasePackageVersion with
+                releasePackageVersion = releasePackageVersion with
+                {
+                    Major = releasePackageVersion.Major + 1,
+                    Minor = VersionConstants.BasePackageVersionPartNumericValue,
+                    Patch = VersionConstants.BasePackageVersionPartNumericValue
+                };
+            }
+            else if (preReleasePackageVersion.PreReleasePackageVersion?.Minor > 0)
             {
-                Minor = releasePackageVersion.Minor + 1,
-                Patch = VersionConstants.BasePackageVersionPartNumericValue
-            };
-        }
-        else if (preReleasePackageVersion.PreReleasePackageVersion?.Patch > 0)
-        {
-            releasePackageVersion = releasePackageVersion with
+                releasePackageVersion = releasePackageVersion with
+                {
+                    Minor = releasePackageVersion.Minor + 1,
+                    Patch = VersionConstants.BasePackageVersionPartNumericValue
+                };
+            }
+            else if (preReleasePackageVersion.PreReleasePackageVersion?.Patch > 0)
             {
-                Patch = releasePackageVersion.Patch + 1
-            };
+                releasePackageVersion = releasePackageVersion with
+                {
+                    Patch = releasePackageVersion.Patch + 1
+                };
+            }
         }
 
         return releasePackageVersion;
@@ -161,13 +168,18 @@ internal static class PackageVersionExtensions
     /// </summary>
     /// <param name="preReleasePackageVersion">The pre-release package version. Example: <c>"0.0.0-pr.0.1.0."</c>.</param>
     /// <param name="currentPreReleasePackageVersion">The current pre-release package version. Example: <c>"0.0.0-pr.1.1.0."</c>.</param>
+    /// <param name="isUnmanagedStandardReleaseVersion">Whether or not the standard release version part was not managed (changed during pre-release development).</param>
     /// <returns>A new pre-release package version value in the pre-release package version format. Example: <c>"0.1.0-pr.0.0.0."</c>.</returns>
     internal static PackageVersion GenerateUpdatedPreReleasePackageVersion(
         this PackageVersion preReleasePackageVersion,
-        PackageVersion currentPreReleasePackageVersion
+        PackageVersion currentPreReleasePackageVersion,
+        bool isUnmanagedStandardReleaseVersion
     )
     {
-        var releasePackageVersion = GenerateReleasePackageVersion(preReleasePackageVersion);
+        var releasePackageVersion = GenerateReleasePackageVersion(
+            preReleasePackageVersion,
+            isUnmanagedStandardReleaseVersion
+        );
 
         if (
             preReleasePackageVersion?.PreReleasePackageVersion is null
@@ -229,10 +241,12 @@ internal static class PackageVersionExtensions
     /// </summary>
     /// <param name="preReleasePackageVersion">The pre-release package version. Example: <c>"0.0.0-pr.0.1.0."</c>.</param>
     /// <param name="preReleasePackageVersionLine">The pre-release package version release notes line. Example: <c>"0.0.0-pr.0.1.0 This is an example release notes line."</c>.</param>
+    /// <param name="isUnmanagedStandardReleaseVersion">Whether or not the standard release version part was not managed (changed during pre-release development).</param>
     /// <returns>A new pre-release package version release notes line value in the pre-release package version format with the prior release notes of the line. Example: <c>"0.1.0-pr.0.0.0 [Updated version from 0.0.0-pr.0.1.0] This is an example release notes line."</c>.</returns>
     internal static string GenerateUpdatedPreReleasePackageVersionLine(
         this PackageVersion preReleasePackageVersion,
-        string preReleasePackageVersionLine
+        string preReleasePackageVersionLine,
+        bool isUnmanagedStandardReleaseVersion
     )
     {
         var preReleasePackageVersionLinePattern = $@"^(.*?){VersionConstants.RegexPatterns.PreReleasePackageVersionGroupPattern}(.*)";
@@ -243,7 +257,8 @@ internal static class PackageVersionExtensions
 
         var updatedPreReleasePackageVersion = GenerateUpdatedPreReleasePackageVersion(
             preReleasePackageVersion,
-            currentPreReleasePackageVersion
+            currentPreReleasePackageVersion,
+            isUnmanagedStandardReleaseVersion
         );
 
         return $"{currentLineIndentation}{updatedPreReleasePackageVersion.ToPackageVersionString()} [Updated version from {currentPreReleasePackageVersion.ToPackageVersionString()}]{currentReleaseNotes}";

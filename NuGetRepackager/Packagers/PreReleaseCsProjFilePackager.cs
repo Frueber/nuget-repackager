@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 using NuGetRepackager.CommandLineArguments;
+using NuGetRepackager.CommandLineArguments.Enums;
 
 namespace NuGetRepackager.Packagers;
 
@@ -27,6 +28,8 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
 
             throw new ArgumentException("The required command line argument value was not provided.");
         }
+
+        var isUnmanagedStandardReleaseVersion = commandLineArguments.Any(commandLineArgument => commandLineArgument.Key is CommandLineArgumentKey.UnmanagedStandardReleaseVersion);
 
         Console.WriteLine("Updating csproj file...");
         Console.WriteLine();
@@ -59,33 +62,28 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
         }
 
         var updatedPackageVersion = currentPackageVersion == preReleasePackageVersion
-            ? preReleasePackageVersion.GenerateReleasePackageVersion()
-            : preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersion(currentPackageVersion);
+            ? preReleasePackageVersion.GenerateReleasePackageVersion(isUnmanagedStandardReleaseVersion)
+            : preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersion(
+                currentPackageVersion,
+                isUnmanagedStandardReleaseVersion
+            );
 
         Console.WriteLine($"Targeted Package Version: {preReleasePackageVersion.ToPackageVersionString()}");
         Console.WriteLine($"Current Package Version: {currentPackageVersion.ToPackageVersionString()}");
         Console.WriteLine($"Updated Package Version: {updatedPackageVersion.ToPackageVersionString()}");
         Console.WriteLine();
 
-        if(currentPackageVersion.Major > updatedPackageVersion.Major)
-        {
-            Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
-
-            return;
-        }
-        else if (
-            currentPackageVersion.Major == updatedPackageVersion.Major
-            && currentPackageVersion.Minor > updatedPackageVersion.Minor
-        )
-        {
-            Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
-
-            return;
-        }
-        else if (
-            currentPackageVersion.Major == updatedPackageVersion.Major
-            && currentPackageVersion.Minor == updatedPackageVersion.Minor
-            && currentPackageVersion.Patch > updatedPackageVersion.Patch
+        if(
+            currentPackageVersion.Major > updatedPackageVersion.Major
+            || (
+                currentPackageVersion.Major == updatedPackageVersion.Major
+                && currentPackageVersion.Minor > updatedPackageVersion.Minor
+            )
+            || (
+                currentPackageVersion.Major == updatedPackageVersion.Major
+                && currentPackageVersion.Minor == updatedPackageVersion.Minor
+                && currentPackageVersion.Patch > updatedPackageVersion.Patch
+            )
         )
         {
             Console.WriteLine($"The current csproj file managed package version part, {currentPackageVersion.ToPackageVersionString()}, is past the expected update version {updatedPackageVersion.ToPackageVersionString()}.");
@@ -141,7 +139,10 @@ internal sealed class PreReleaseCsProjFilePackager : IPackager
                     }
 
                     // We aren't expecting to perform a production release of a package version that is older than the latest package version.
-                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(releaseNotesLine);
+                    releaseNotesLines[releaseNotesLineIndex] = preReleasePackageVersion.GenerateUpdatedPreReleasePackageVersionLine(
+                        releaseNotesLine,
+                        isUnmanagedStandardReleaseVersion
+                    );
                 }
 
                 Console.WriteLine(releaseNotesLine);
