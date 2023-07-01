@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace NuGetRepackager;
+﻿namespace NuGetRepackager;
 
 /// <summary>
 /// Contains constant values used in version updates.
