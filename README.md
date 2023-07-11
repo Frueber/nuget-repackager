@@ -2,7 +2,7 @@
 
 NuGet Repackager is a .NET tool for repackaging pre-release NuGet packages into their standard release version, or into a specified pre-release or release version. This tool also provides options for updating associated files to reflect the occurrence of the repackaging.  
 
-Developers can leverage this tool when a pre-release package is chosen for a standard release. Developers will need to maintain the pre-release version part of the package version (`-pr.4.5.6` in `1.2.3-pr.4.5.6`) and will only increment the standard release version part of a package version (`1.2.3` in `1.2.3-pr.4.5.6`) by one in the corresponding position of the greatest position of the pre-release version part. For example, if the current release version is `1.0.0` and a pre-release change is made that adds `-pr.0.1.0` then the full package version would be `1.1.0-pr.0.1.0`.  
+Developers can leverage this tool when a pre-release package is chosen for a standard release. Developers will need to maintain the pre-release version part of the package version (`-pr.4.5.6` in `1.0.0-pr.4.5.6`) and will only increment the standard release version part of a package version (`1.0.0` in `1.0.0-pr.4.5.6`) by one in the corresponding position of the greatest position of the pre-release version part. For example, if the current release version is `1.0.0` and a pre-release change is made that adds `-pr.0.1.0` then the full package version would be `1.1.0-pr.0.1.0`.  
 
 This tool aims to assist developers with Continuous Integration during NuGet package development, and makes trunk-based or mainline branching easier, as it lends itself towards making small updates and frequently available pre-release packages, and performs automated package version and branch reconciliation to keep developers moving forward.  
 
@@ -69,5 +69,5 @@ The `--csproj` flag allows us to specify the CsProj file which needs its package
 
 ### Unmanaged Standard Release Version  
 
-Most pre-release package strategies that use semantic versioning will also change the standard release version part (`1.2.3` in `1.2.3-pr.4.5.6`), however, if you've decided to not alter this during development of the pre-release package then it can be automatically calculated by this tool using the `--usrv` flag.  
-The `--usrv` tag takes no arguments and simply conveys that the standard release version should be calculated from the pre-release version part (`4.5.6` in `1.2.3-pr.4.5.6`).  
+Most pre-release package strategies that use semantic versioning will also change the standard release version part (`1.0.0` in `1.0.0-pr.4.5.6`), however, if you've decided to not alter this during development of the pre-release package then it can be automatically calculated by this tool using the `--usrv` flag.  
+The `--usrv` tag takes no arguments and simply conveys that the standard release version should be calculated from the pre-release version part (`4.5.6` in `1.0.0-pr.4.5.6`).  
